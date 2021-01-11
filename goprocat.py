@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import ffmpeg
 import argparse
 import os
@@ -5,7 +6,7 @@ import glob
 import gpmf
 import gpxpy
 
-def group_videos(path):
+def group_videos(path: str) -> list:
     """ GoPro録画データのグルーピング
     Parameters
     ----------
@@ -36,7 +37,7 @@ def group_videos(path):
 
     return group_list
 
-def cocat_videos(input_videos, output_path):
+def cocat_videos(input_videos: list, output_path: str):
     """ GoPro録画データの結合
     Parameters
     ----------
@@ -50,7 +51,7 @@ def cocat_videos(input_videos, output_path):
     output_name = header_name[-12:]
     ffmpeg.input('concat:' + '|'.join(input_videos)).output(output_path + '/' + output_name, c='copy').run()
 
-def extract_gps(input_videos, output_path):
+def extract_gps(input_videos: list, output_path: str):
     """ GoPro GPSデータの結合
     Parameters
     ----------
@@ -68,13 +69,10 @@ def extract_gps(input_videos, output_path):
     gpx.tracks.append(gpx_track)
 
     for v in input_videos:
-        # Read the binary stream from the file
         stream = gpmf.io.extract_gpmf_stream(v)
 
-        # Extract GPS low level data from the stream
         gps_blocks = gpmf.gps.extract_gps_blocks(stream)
 
-        # Parse low level data into more usable format
         try:
             gps_data = list(map(gpmf.gps.parse_gps_block, gps_blocks))
             gpx_track.segments.append(gpmf.gps.make_pgx_segment(gps_data))
