@@ -77,15 +77,11 @@ def extract_gps(input_videos, output_path):
         # Parse low level data into more usable format
         try:
             gps_data = list(map(gpmf.gps.parse_gps_block, gps_blocks))
+            gpx_track.segments.append(gpmf.gps.make_pgx_segment(gps_data))
         except ValueError:
             print('GPS data is not contained: ', v)
         except IndexError:
-            print('gpmf\'s bug...')
-        else:
-            try:
-                gpx_track.segments.append(gpmf.gps.make_pgx_segment(gps_data))
-            except IndexError:
-                print('gpmf\'s bug...')
+            print('gpmf\'s bug: ', v)
 
     gpx_file_path = output_path + '/' + output_name
 
@@ -98,8 +94,8 @@ def main():
     parser.add_argument('-o', '--output', help='保存先ディレクトリ')
 
     args = parser.parse_args()
-    group = group_videos(args.input)
-    for g in group:
+    groups = group_videos(args.input)
+    for g in groups:
         extract_gps(g, args.output)
         cocat_videos(g, args.output)
 
