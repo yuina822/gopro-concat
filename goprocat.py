@@ -101,7 +101,7 @@ def main():
     group = group_videos(args.input)
     for g in group:
         extract_gps(g, args.output)
-        # cocat_videos(g, args.output)
+        cocat_videos(g, args.output)
 
 if __name__ == "__main__":
     main()
