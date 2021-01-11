@@ -88,14 +88,17 @@ def extract_gps(input_videos: list, output_path: str):
 
 def main():
     parser = argparse.ArgumentParser(description='GoPro録画データ結合スクリプト')
-    parser.add_argument('-i', '--input', help='録画データディレクトリ')
-    parser.add_argument('-o', '--output', help='保存先ディレクトリ')
+    parser.add_argument('-i', '--input', help='録画データディレクトリ', metavar='file_path', required=True)
+    parser.add_argument('-o', '--output', help='保存先ディレクトリ', metavar='file_path', required=True)
+    parser.add_argument('-m', '--mode', help='結合データの選択(default: all)', default='all', choices=['all', 'video', 'gps'])
 
     args = parser.parse_args()
     groups = group_videos(args.input)
     for g in groups:
-        extract_gps(g, args.output)
-        cocat_videos(g, args.output)
+        if args.mode == 'all' or args.mode == 'gps':
+            extract_gps(g, args.output)
+        if args.mode == 'all' or args.mode == 'video':
+            cocat_videos(g, args.output)
 
 if __name__ == "__main__":
     main()
